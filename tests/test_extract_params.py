@@ -29,3 +29,45 @@ def test_extract_params():
         },
     }
     assert sktune.extract_params(dic)[1] == expected
+
+
+def test_extract_pipeline():
+    """Test extracting pipeline from a pipeline YML file."""
+    with open(file=os.path.join(DATA_DIR, "pipeline.yml"), encoding="utf-8") as file:
+        dic = yaml.load(file, Loader=yaml.SafeLoader)
+    expected = {
+        "Pipeline": {
+            "steps": [
+                [
+                    "transformer",
+                    {
+                        "ColumnTransformer": {
+                            "remainder": {"PowerTransformer": None},
+                            "transformers": [
+                                [
+                                    "encoder",
+                                    {
+                                        "OneHotEncoder": {
+                                            "handle_unknown": "ignore",
+                                            "sparse": None,
+                                        }
+                                    },
+                                    [0],
+                                ],
+                            ],
+                        }
+                    },
+                ],
+                [
+                    "regressor",
+                    {
+                        "HistGradientBoostingRegressor": {
+                            "learning_rate": None,
+                            "loss": "poisson",
+                        }
+                    },
+                ],
+            ]
+        }
+    }
+    assert sktune.extract_params(dic)[0] == expected
