@@ -60,21 +60,36 @@ def extract_params(dic, name=None, params=None):
     if params is None:
         params = {}
 
-    if "Pipeline" in dic:
-        for s in dic["Pipeline"]["steps"]:
-            obj_name = list(s[1])[0]
-            obj_values = s[1][obj_name]
-            extract_params(obj_values, s[0], params)
+    for obj, val in dic.items():
 
+        if obj in SKLEARN_OBJS:
 
-    if obj_name in SKLEARN_OBJS:
-        extract_params(obj_values, name + "__", params)
+            if obj == "Pipeline":
+                steps = val["steps"]
+                for new_name, objs in steps:
+                    if name:
+                        new_name = name + "__" + new_name
+                    extract_params(objs, new_name, params)
 
-    for key in obj_values:
-        for func_name in FUNC_NAMES:
-            if func_name in obj_values[key]:
-                params[f"{name}__{key}"] = obj_values.pop(key)
-                break
+            if obj == "ColumnTransformer":
+                steps = []
+                if "transformers" in val:
+                    steps += val["transformers"]
+                if "remainder" in val:
+                    steps.append(["remainder", val["remainder"], None])
+                for new_name, objs, _ in steps:
+                    if name:
+                        new_name = name + "__" + new_name
+                    extract_params(objs, new_name, params)
+
+            if isinstance(val, dict):
+                extract_params(val, name, params)
+
+        if isinstance(val, dict):
+            for v in val:
+                if v in FUNC_NAMES:
+                    params[name + "__" + obj] = dic[obj]
+                    dic[obj] = None
 
     return dic, params
 

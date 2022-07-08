@@ -1,23 +1,23 @@
 Pipeline:
   steps:
-    # - - transformer
-    #   - ColumnTransformer:
-    #       remainder:
-    #         PowerTransformer: null
-    #       transformers:
-    #         - - encoder
-    #           - OneHotEncoder:
-    #               handle_unknown: ignore
-    #               sparse:
-    #                 categorical:
-    #                   choices:
-    #                     - False
-    #           - - 0
+    - - transformer
+      - ColumnTransformer:
+          remainder:
+            PowerTransformer: null
+          transformers:
+            - - encoder
+              - OneHotEncoder:
+                  handle_unknown: ignore
+                  sparse:
+                    categorical:
+                      choices:
+                        - False
+              - - 0
     - - regressor
       - HistGradientBoostingRegressor:
           learning_rate:
             float:
               low: 0.01
-              high: 1
+              high: 0.1
               log: true
           loss: poisson

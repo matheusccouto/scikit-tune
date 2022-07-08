@@ -22,10 +22,10 @@ def test_extract_params():
         },
         "regressor__learning_rate": {
             "float": {
-                "low": 0.001,
+                "low": 0.01,
                 "high": 0.1,
                 "log": True,
             },
         },
     }
-    assert sktune.extract_params(dic) == expected
+    assert sktune.extract_params(dic)[1] == expected
