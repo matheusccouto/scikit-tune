@@ -3,30 +3,25 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
-from typing import Any, Callable, Dict, Sequence
 
-import numpy as np
-import pandas as pd
 import optuna
 import skdict
 import sklearn
 import yaml
-from sklearn.base import BaseEstimator
-from sklearn.model_selection import BaseCrossValidator, cross_val_score
+from sklearn.model_selection import cross_val_score
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,too-many-arguments,too-few-public-methods
 
 FUNC_NAMES = ("categorical", "float", "int")
 SKLEARN_OBJS = skdict.get_all_sklearn_objects(sklearn)
 
 
-@dataclass
 class Param:
     """Parameter for tuning."""
 
-    name: str
-    config: Dict[str, Dict[str, Any]]
+    def __init__(self, name, config):
+        self.name = name
+        self.config = config
 
     def evaluate(self, trial: optuna.Trial) -> float:
         """Evaluate the trial."""
@@ -39,16 +34,16 @@ class Param:
         raise TypeError("Unsupported param type.")
 
 
-@dataclass
 class Objective:
     """Optuna objective."""
 
-    estimator: BaseEstimator
-    x: pd.DataFrame | np.ndarray
-    y: pd.Series | np.ndarra
-    scoring: str | Callable
-    cv: int | BaseCrossValidator
-    params: Sequence[Param]
+    def __init__(self, estimator, x, y, scoring, cv, params):
+        self.estimator = estimator
+        self.x = x
+        self.y = y
+        self.scoring = scoring
+        self.cv = cv
+        self.params = params
 
     def __call__(self, trial):
         self.estimator.set_params(**{p.name: p.evaluate(trial) for p in self.params})
@@ -106,7 +101,6 @@ def extract_params(dic, name=None, params=None):
 
 def tune(path, x, y, scoring, cv, n_trials, timeout, direction, output):
     """Tune scikit-learn pipelines from YAML file."""
-    # pylint: disable=too-many-arguments
     with open(path, encoding="utf-8") as file:
         pipeline, params = extract_params(yaml.safe_load(file))
 
