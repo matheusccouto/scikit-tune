@@ -121,3 +121,4 @@ def tune(path, x, y, scoring, cv, n_trials, timeout, direction, output):
     os.makedirs(os.path.dirname(output), exist_ok=True)
     with open(output, mode="w", encoding="utf-8") as file:
         yaml.safe_dump(skdict.dump(estimator), file)
+    return estimator

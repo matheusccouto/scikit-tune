@@ -29,7 +29,7 @@ def clear_tmp_fixture():
 
 def test_tune(data, clean_tmp):  # pylint: disable=unused-argument
     """Test extracting pipeline from a pipeline YML file."""
-    sktune.tune(
+    model = sktune.tune(
         path=os.path.join(DATA_DIR, "pipeline.yml"),
         x=data[0],
         y=data[1],
@@ -41,3 +41,5 @@ def test_tune(data, clean_tmp):  # pylint: disable=unused-argument
         output=os.path.join(TMP_DIR, "pipeline.yml"),
     )
     assert skdict.load(os.path.join(TMP_DIR, "pipeline.yml"))
+    assert hasattr(model, "fit")
+    assert hasattr(model, "predict")
