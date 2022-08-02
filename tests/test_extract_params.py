@@ -1,4 +1,4 @@
-"""Test extracting params from YML file."""
+"""Test extracting params from dict pipeline."""
 
 import os
 
@@ -63,7 +63,7 @@ def test_extract_pipeline():
                     {
                         "HistGradientBoostingRegressor": {
                             "learning_rate": None,
-                            "loss": "poisson",
+                            "loss": "squared_error",
                         }
                     },
                 ],

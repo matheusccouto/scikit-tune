@@ -20,4 +20,4 @@ Pipeline:
               low: 0.01
               high: 0.1
               log: true
-          loss: poisson
+          loss: squared_error
