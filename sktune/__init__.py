@@ -87,6 +87,17 @@ def extract_params(dic, name=None, params=None):
                         new_name = name + "__" + new_name
                     extract_params(objs, new_name, params)
 
+            if obj == "TransformedTargetRegressor":
+                steps = []
+                if "regressor" in val:
+                    steps.append(["regressor", val["regressor"]])
+                if "transformer" in val:
+                    steps.append(["transformer", val["transformer"]])
+                for new_name, objs in steps:
+                    if name:
+                        new_name = name + "__" + new_name
+                    extract_params(objs, new_name, params)
+
             if isinstance(val, dict):
                 extract_params(val, name, params)
 

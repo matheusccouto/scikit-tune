@@ -15,12 +15,12 @@ def test_extract_params():
     with open(file=os.path.join(DATA_DIR, "pipeline.yml"), encoding="utf-8") as file:
         dic = yaml.load(file, Loader=yaml.SafeLoader)
     expected = {
-        "transformer__encoder__sparse": {
+        "regressor__transformer__encoder__sparse": {
             "categorical": {
                 "choices": [False],
             }
         },
-        "regressor__learning_rate": {
+        "regressor__regressor__learning_rate": {
             "float": {
                 "low": 0.01,
                 "high": 0.1,
@@ -36,38 +36,43 @@ def test_extract_pipeline():
     with open(file=os.path.join(DATA_DIR, "pipeline.yml"), encoding="utf-8") as file:
         dic = yaml.load(file, Loader=yaml.SafeLoader)
     expected = {
-        "Pipeline": {
-            "steps": [
-                [
-                    "transformer",
-                    {
-                        "ColumnTransformer": {
-                            "remainder": {"PowerTransformer": None},
-                            "transformers": [
-                                [
-                                    "encoder",
-                                    {
-                                        "OneHotEncoder": {
-                                            "handle_unknown": "ignore",
-                                            "sparse": None,
-                                        }
-                                    },
-                                    [0],
-                                ],
-                            ],
-                        }
-                    },
-                ],
-                [
-                    "regressor",
-                    {
-                        "HistGradientBoostingRegressor": {
-                            "learning_rate": None,
-                            "loss": "squared_error",
-                        }
-                    },
-                ],
-            ]
+        "TransformedTargetRegressor": {
+            "transformer": {"PowerTransformer": None},
+            "regressor": {
+                "Pipeline": {
+                    "steps": [
+                        [
+                            "transformer",
+                            {
+                                "ColumnTransformer": {
+                                    "remainder": {"PowerTransformer": None},
+                                    "transformers": [
+                                        [
+                                            "encoder",
+                                            {
+                                                "OneHotEncoder": {
+                                                    "handle_unknown": "ignore",
+                                                    "sparse": None,
+                                                }
+                                            },
+                                            [0],
+                                        ],
+                                    ],
+                                }
+                            },
+                        ],
+                        [
+                            "regressor",
+                            {
+                                "HistGradientBoostingRegressor": {
+                                    "learning_rate": None,
+                                    "loss": "squared_error",
+                                }
+                            },
+                        ],
+                    ]
+                }
+            },
         }
     }
     assert sktune.extract_params(dic)[0] == expected

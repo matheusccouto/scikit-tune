@@ -10,7 +10,7 @@ with open(os.path.join(THIS_DIR, "requirements.txt"), encoding="utf-8") as f:
 
 setuptools.setup(
     name="scikit-tune",
-    version="0.2.0",
+    version="0.2.1",
     author="Matheus Couto",
     author_email="matheusccouto@gmail.com",
     description="A friendly way to tune scikit-learn pipelines.",
