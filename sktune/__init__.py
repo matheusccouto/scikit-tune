@@ -46,7 +46,8 @@ class Objective:
         self.params = params
 
     def __call__(self, trial):
-        self.estimator.set_params(**{p.name: p.evaluate(trial) for p in self.params})
+        self.estimator.set_params(
+            **{p.name: p.evaluate(trial) for p in self.params})
         return cross_val_score(
             self.estimator,
             self.x,
@@ -65,47 +66,49 @@ def extract_params(dic, name=None, params=None):
     if params is None:
         params = {}
 
-    for obj, val in dic.items():
+    if isinstance(dic, dict):
 
-        if obj in SKLEARN_OBJS:
+        for obj, val in dic.items():
 
-            if obj == "Pipeline":
-                steps = val["steps"]
-                for new_name, objs in steps:
-                    if name:
-                        new_name = name + "__" + new_name
-                    extract_params(objs, new_name, params)
+            if obj in SKLEARN_OBJS:
 
-            if obj == "ColumnTransformer":
-                steps = []
-                if "transformers" in val:
-                    steps += val["transformers"]
-                if "remainder" in val:
-                    steps.append(["remainder", val["remainder"], None])
-                for new_name, objs, _ in steps:
-                    if name:
-                        new_name = name + "__" + new_name
-                    extract_params(objs, new_name, params)
+                if obj == "Pipeline":
+                    steps = val["steps"]
+                    for new_name, objs in steps:
+                        if name:
+                            new_name = name + "__" + new_name
+                        extract_params(objs, new_name, params)
 
-            if obj == "TransformedTargetRegressor":
-                steps = []
-                if "regressor" in val:
-                    steps.append(["regressor", val["regressor"]])
-                if "transformer" in val:
-                    steps.append(["transformer", val["transformer"]])
-                for new_name, objs in steps:
-                    if name:
-                        new_name = name + "__" + new_name
-                    extract_params(objs, new_name, params)
+                if obj == "ColumnTransformer":
+                    steps = []
+                    if "transformers" in val:
+                        steps += val["transformers"]
+                    if "remainder" in val:
+                        steps.append(["remainder", val["remainder"], None])
+                    for new_name, objs, _ in steps:
+                        if name:
+                            new_name = name + "__" + new_name
+                        extract_params(objs, new_name, params)
+
+                if obj == "TransformedTargetRegressor":
+                    steps = []
+                    if "regressor" in val:
+                        steps.append(["regressor", val["regressor"]])
+                    if "transformer" in val:
+                        steps.append(["transformer", val["transformer"]])
+                    for new_name, objs in steps:
+                        if name:
+                            new_name = name + "__" + new_name
+                        extract_params(objs, new_name, params)
+
+                if isinstance(val, dict):
+                    extract_params(val, name, params)
 
             if isinstance(val, dict):
-                extract_params(val, name, params)
-
-        if isinstance(val, dict):
-            for v in val:
-                if v in FUNC_NAMES:
-                    params[name + "__" + obj] = dic[obj]
-                    dic[obj] = None
+                for v in val:
+                    if v in FUNC_NAMES:
+                        params[name + "__" + obj] = dic[obj]
+                        dic[obj] = None
 
     return dic, params
 

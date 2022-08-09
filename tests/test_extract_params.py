@@ -45,7 +45,7 @@ def test_extract_pipeline():
                             "transformer",
                             {
                                 "ColumnTransformer": {
-                                    "remainder": {"PowerTransformer": None},
+                                    "remainder": "passthrough",
                                     "transformers": [
                                         [
                                             "encoder",

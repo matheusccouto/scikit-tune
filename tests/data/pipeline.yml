@@ -6,8 +6,7 @@ TransformedTargetRegressor:
       steps:
         - - transformer
           - ColumnTransformer:
-              remainder:
-                PowerTransformer: null
+              remainder: passthrough
               transformers:
                 - - encoder
                   - OneHotEncoder:
