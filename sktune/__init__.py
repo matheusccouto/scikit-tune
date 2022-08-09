@@ -59,7 +59,7 @@ class Objective:
 
 def extract_params(dic, name=None, params=None):
     """Get parameters from dict file."""
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-nested-blocks
     if name is None:
         name = ""
 
