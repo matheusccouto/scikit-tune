@@ -9,7 +9,7 @@ with open(os.path.join(THIS_DIR, "requirements.txt"), encoding="utf-8") as f:
     required = f.read().splitlines()
 
 with open(os.path.join(THIS_DIR, "README.md"), encoding="utf-8") as f:
-    long_description = f.read()
+    long_description = f.read().strip()
 
 setuptools.setup(
     name="scikit-tune",
@@ -21,4 +21,5 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     packages=["sktune"],
     install_requires=required,
+    license="MIT",
 )
